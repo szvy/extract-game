@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Game Link Extractor</title>
+  <link rel="stylesheet" href="style.css"> <!-- Add this line for your CSS -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Add this line for your favicon -->
+</head>
+<body>
+  <div class="extract-section">
+    <textarea id="sourceCode" rows="10" placeholder="Paste your source code here"></textarea>
+    <br>
+    <button onclick="extractSrcCode()">Extract</button>
+    <br>
+    <textarea id="result" rows="3" readonly></textarea>
+    <br>
+    <button onclick="copyToClipboard('result')">Copy Game Link</button>
+    <br>
+    <textarea id="imgSrc" rows="3" readonly></textarea>
+    <br>
+    <button onclick="copyToClipboard('imgSrc')">Copy Game Image</button>
+  </div>
+
+  <script>
+    function extractSrcCode() {
+      var sourceCodeTextbox = document.getElementById("sourceCode");
+      var resultTextbox = document.getElementById("result");
+      var imgSrcTextbox = document.getElementById("imgSrc");
+
+      var sourceCode = sourceCodeTextbox.value;
+
+      var startIndex = sourceCode.indexOf('src=&quot;');
+      if (startIndex !== -1) {
+        startIndex += 10;
+        var endIndex = sourceCode.indexOf('&quot;', startIndex);
+        if (endIndex !== -1) {
+          var extractedText = sourceCode.substring(startIndex, endIndex);
+          resultTextbox.value = extractedText;
+        } else {
+          resultTextbox.value = "Invalid game link.";
+        }
+      } else {
+        resultTextbox.value = "No game link found.";
+      }
+
+      startIndex = sourceCode.indexOf('<img src="');
+      if (startIndex !== -1) {
+        startIndex += 10;
+        var endIndex = sourceCode.indexOf('"', startIndex);
+        if (endIndex !== -1) {
+          var extractedText = sourceCode.substring(startIndex, endIndex);
+          imgSrcTextbox.value = handleImageAddress(extractedText);
+        } else {
+          imgSrcTextbox.value = "Invalid image source.";
+        }
+      } else {
+        var contentStartIndex = sourceCode.indexOf('content="Unblocked Games - ');
+        if (contentStartIndex !== -1) {
+          contentStartIndex += 'content="Unblocked Games - '.length;
+          var endIndex = sourceCode.indexOf('>', contentStartIndex);
+          if (endIndex !== -1) {
+            var searchText = sourceCode.substring(contentStartIndex, endIndex);
+            searchOnGoogle(searchText, imgSrcTextbox);
+            return;
+          }
+        }
+        imgSrcTextbox.value = "No image source found.";
+      }
+    }
+
+    function searchOnGoogle(query, imgSrcTextbox) {
+      // Replace "YOUR_API_KEY" with your actual Google Custom Search API key
+      var apiKey = "AIzaSyATMgXzprPcZlaewFepttndc2CAYldFogI";
+      // Replace "YOUR_CX_KEY" with your actual Custom Search Engine (CX) key
+      var cxKey = "956b61a72ac0949bf";
+      var apiUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cxKey}&q=${encodeURIComponent(query)}&searchType=image`;
+
+      fetch(apiUrl)
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(data) {
+          if (data.items && data.items.length > 0) {
+            var firstImageUrl = data.items[0].link;
+            imgSrcTextbox.value = firstImageUrl;
+          } else {
+            imgSrcTextbox.value = "No image found on Google.";
+          }
+        })
+        .catch(function(error) {
+          imgSrcTextbox.value = "Error occurred while searching on Google.";
+          console.error(error);
+        });
+    }
+
+    function handleImageAddress(imageUrl) {
+      if (imageUrl.startsWith("tps://")) {
+        imageUrl = imageUrl.replace("tps://", "https://");
+      }
+      return imageUrl;
+    }
+
+    function copyToClipboard(elementId) {
+      var element = document.getElementById(elementId);
+      element.select();
+      document.execCommand("copy");
+    }
+  </script>
+</body>
+</html>
