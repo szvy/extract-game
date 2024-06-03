@@ -2,8 +2,7 @@
 <html>
 <head>
   <title>Game Link Extractor</title>
-  <link rel="stylesheet" href="style.css"> <!-- Add this line for your CSS -->
-  <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Add this line for your favicon -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="extract-section">
@@ -68,9 +67,7 @@
     }
 
     function searchOnGoogle(query, imgSrcTextbox) {
-      // Replace "YOUR_API_KEY" with your actual Google Custom Search API key
       var apiKey = "AIzaSyATMgXzprPcZlaewFepttndc2CAYldFogI";
-      // Replace "YOUR_CX_KEY" with your actual Custom Search Engine (CX) key
       var cxKey = "956b61a72ac0949bf";
       var apiUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cxKey}&q=${encodeURIComponent(query)}&searchType=image`;
 
