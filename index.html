@@ -33,6 +33,9 @@
         var endIndex = sourceCode.indexOf('&quot;', startIndex);
         if (endIndex !== -1) {
           var extractedText = sourceCode.substring(startIndex, endIndex);
+
+          extractedText = extractedText.replace(/amp;/g, '');
+
           resultTextbox.value = extractedText;
         } else {
           resultTextbox.value = "Invalid game link.";
